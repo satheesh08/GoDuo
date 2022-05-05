@@ -6,6 +6,7 @@ color:white;
 font-size:xx-large;
 font-weight:bold;
 float:left;
+margin-top: 0px;
 }
 
 #capt{
@@ -13,24 +14,24 @@ color:white;
 font-size:medium;
 float:left;
 margin-left:-100px;
-margin-top:35px;
-30px;
+margin-top:5px;
+
 }
 
 #logo-tab{
 background-color:#000080; 
-padding:10px;
-
+padding:40px;
+border-radius: 75px;
 }
 
 #about{
 background-color: #ffffff; 
 color: black;
 padding:15px;
-font-size:20px 
+font-size:15px; 
 float:right;
 margin-left:1100px;
-margin-top:25px;
+margin-top:-70px;
 transition-duration: 0.4s;
 border-radius:12px;
 }
@@ -95,6 +96,22 @@ background-color: green;  color: white;
 }
 
 
+#delete{
+margin-left:480px;
+margin-top:15px;
+height:40px;
+width:400px;
+transition-duration: 0.4s;
+background-color: #ffffff; 
+color: black;
+font-size:18px;
+border-radius:12px;
+}
+
+#delete:hover{
+background-color: green;  color: white;
+}
+
 #hr1{ margin-top:30px; float:left; width:645px; size:60px;}
 #hr2{ margin-top:-27px; float:right; width:680px; size:60px}
 
@@ -137,11 +154,20 @@ color:red;
 
 
 <?php
+session_start();
+//if ($_SERVER["REQUEST_METHOD"] == "POST") {  
+// if (isset($_POST['login'])) {  
 
-if (isset($_POST['create'])) {  
+    /*
+    $email=$_POST['user-inp'];
+    $pass=$_POST['pass-inp'];
+
+$emailErr=$passwordErr="";
+$email_new=$password_new="";
+$login_Err="";
 
 // email validation
-$email=$_POST["email"];
+
 if(empty($email)){  
 $emailErr="e-Mail Input Required ";  
 }
@@ -156,9 +182,9 @@ else{
 
 
 // pass validation
-$pass=$_POST["pass"];
+$pass=$_POST['pass-inp'];
 if(empty($pass)){  
-$paawordErr= "Password Input Required";  
+$passwordErr= "Password Input Required";  
 }
 else{
 $password_new=$pass;	
@@ -175,103 +201,269 @@ function input_data($data) {
   $data = stripslashes($data);  
   $data = htmlspecialchars($data);  
   return $data;  
-}  
-*/
+}  */
 
+//}
+
+if(isset($_POST['login']))
+{
+
+    $email=$_POST['user-inp'];
+    $pass=$_POST['pass-inp'];
+
+$emailErr=$passwordErr="";
+$email_new=$password_new="";
+$login_Err="";
+
+// email validation
+
+if(empty($email)){  
+$emailErr="e-Mail Input Required ";  
 }
+else if(!preg_match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$^', $email))
+{
+         $emailErr="Invalid e-Mail" ;
+}
+else{
+	$email_new=$email;
+}
+
+
+
+// pass validation
+$pass=$_POST['pass-inp'];
+if(empty($pass)){  
+$passwordErr= "Password Input Required";  
+}
+else{
+$password_new=$pass;	
+}
+
+
 
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db_name = "GoDuo";
-$con = new mysqli($host, $user, $pass, $db_name);
+$db_name = "goduo";
 
 
+   //Creating a connection
+   $conn = mysqli_connect($host, $user, $pass, $db_name);
+   if(!$conn){
+        echo"error";
+   }
+   else{
 
-if (! $error){
-/* Attempt MySQL server connection. Assuming
-you are running MySQL server with default
-setting (user 'root' with no password) */
-
-$link = mysqli_connect("localhost","root", "", "GoDuo_app");
- 
-// Check connection
-if($link === false){
-    die("ERROR: Could not connect. ". mysqli_connect_error());
+    // $userA=mysqli_real_escape_string($conn,$_POST['user-inp']);
+    // $passA=mysqli_real_escape_string($conn,$_POST['pass-inp']);
+    $userA= $email_new; // $_POST['user-inp'];
+    $passA= $password_new; //$_POST['pass-inp'];
+    $sql = "SELECT * FROM user_data2 WHERE mail='$userA' AND password='$passA'";
+    $result = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($result) === 1) {
+        $row = mysqli_fetch_assoc($result);
+        if ($row['mail'] === $userA && $row['password'] === $passA) {
+            //  $_SESSION['user_name'] = $row['mail'];
+            header("Location: Search.php");
+            exit();
+        }else{
+            header("Location: Login.php");
+            exit();
+        }
+    }
+    mysqli_close($conn);
 }
-  
-// Escape user inputs for security
-
-  
-// Attempt insert query execution
-
-$sql = "SELECT * FROM GoDuo WHERE mail='$email_new' AND password='$password_new'";
-        $result = mysqli_query($conn, $sql);
-        if (mysqli_num_rows($result) === 1) {
-            $row = mysqli_fetch_assoc($result);
-            if ($row['mail'] === $email_new && $row['password'] === $password_new) {
-                echo "Logged in!";
-                $_SESSION['user_name'] = $row['mail'];
-                $_SESSION['name'] = $row['name'];
-                $_SESSION['id'] = $row['id'];
-                header("Location: search.php");
-                exit();
-            }else{
-                header("Location: index.php?error=Incorect User name or password");
-                exit();
-            }
-        }if(mysqli_query($link, $sql)){
-    
-	  header("Location: search.php");// open search page here 
-	  exit();
-	
-} else{
-    echo "ERROR: Creating your profile";
-	
-}
- // Close connection
-mysqli_close($link);
 }
 
+if(isset($_POST['edit']))
+{
+
+    $email=$_POST['user-inp'];
+    $pass=$_POST['pass-inp'];
+
+$emailErr=$passwordErr="";
+$email_new=$password_new="";
+$login_Err="";
+
+// email validation
+
+if(empty($email)){  
+$emailErr="e-Mail Input Required ";  
+}
+else if(!preg_match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$^', $email))
+{
+         $emailErr="Invalid e-Mail" ;
+}
+else{
+	$email_new=$email;
+}
+
+
+
+// pass validation
+$pass=$_POST['pass-inp'];
+if(empty($pass)){  
+$passwordErr= "Password Input Required";  
+}
+else{
+$password_new=$pass;	
+}
+
+
+
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db_name = "goduo";
+
+
+   //Creating a connection
+   $conn = mysqli_connect($host, $user, $pass, $db_name);
+   if(!$conn){
+        echo"error";
+   }
+   else{
+
+     $userA=$email_new;// mysqli_real_escape_string($conn,$_POST['user-inp']);
+    $passA=$password_new; //mysqli_real_escape_string($conn,$_POST['pass-inp']);
+    $sql = "SELECT * FROM user_data2 WHERE mail='$userA' AND password='$passA'";
+    $result = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($result) === 1) {
+        $row = mysqli_fetch_assoc($result);
+        if ($row['mail'] === $userA && $row['password'] === $passA) {
+            // session_start();
+            $_SESSION["user_name"] = $userA;
+            header("Location: Edit.php");
+            exit();
+        }else{
+            header("Location: Login.php");
+            exit();
+        }
+    }
+// Close connection
+mysqli_close($conn);
+}
+
+}
+
+if(isset($_POST['delete']))
+{
+
+    $email=$_POST['user-inp'];
+    $pass=$_POST['pass-inp'];
+
+$emailErr=$passwordErr="";
+$email_new=$password_new="";
+$login_Err="";
+
+// email validation
+
+if(empty($email)){  
+$emailErr="e-Mail Input Required ";  
+}
+else if(!preg_match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$^', $email))
+{
+         $emailErr="Invalid e-Mail" ;
+}
+else{
+	$email_new=$email;
+}
+
+
+
+// pass validation
+$pass=$_POST['pass-inp'];
+if(empty($pass)){  
+$passwordErr= "Password Input Required";  
+}
+else{
+$password_new=$pass;	
+}
+
+
+
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db_name = "goduo";
+
+
+   //Creating a connection
+   $conn = mysqli_connect($host, $user, $pass, $db_name);
+   if(!$conn){
+        echo"error";
+   }
+   else{
+
+     $userA=$email_new;// mysqli_real_escape_string($conn,$_POST['user-inp']);
+    $passA=$password_new; //mysqli_real_escape_string($conn,$_POST['pass-inp']);
+    $sql = "SELECT * FROM user_data2 WHERE mail='$userA' AND password='$passA'";
+    $result = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($result) === 1) {
+        $row = mysqli_fetch_assoc($result);
+        if ($row['mail'] === $userA && $row['password'] === $passA) {
+            // session_start();
+            $sql2="DELETE FROM user_data2 WHERE mail='$userA'";
+            mysqli_query($conn, $sql2);
+
+            header("Location: Login.php");
+            exit();
+        }else{
+            header("Location: Search.php");
+            exit();
+        }
+    }
+// Close connection
+mysqli_close($conn);
+}
+
+}
+
+
+
+if(isset($_POST['acc_create']))
+{
+header("Location: New_User.php");
+}
 
 ?>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <div id="logo-tab">
 <p id="name">GoDuo</p><br/><br/>
-<p id="capt">You & I make a perfect "WE"</p><button type="button" id="about" >About Us</button>
+<p id="capt">You & I make a perfect "WE"</p><button type="submit" id="about" onclick="aboutus()" >About Us</button>
+<script>
+    function aboutus(){
+        window.location.href = "about-us.html";
+    }
+
+</script>
 </div>
 </br>
 
 
 
-<form id="form-login" action="">
 
-<p id="info1" ">Log into GoDuo</p>
-<input type="text" id="user-inp" placeholder="G-Mail" required></input>
-<input type="password" id="pass-inp" placeholder="Password" required></input>
-<button type="button" id="login" >Log In</button>
-<button type="button" id="edit" >Edit Profile</button>
+
+<p id="info1">Log into GoDuo</p>
+<form id="form-login" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+<input type="text" id="user-inp" name="user-inp" placeholder="Mail" ></input>
+<span style="color: red;"><?php if ( isset($emailErr)) echo $emailErr; ?></span></br>
+<input type="password" id="pass-inp" name="pass-inp" placeholder="Password" ></input>
+<spans style="color: red;"><?php if (  isset($passwordErr)) echo $passwordErr; ?></span></br>
+
+<input type="submit" value="Log In" id="login" name="login">
+<input type="submit" value="Edit Profile" id="edit" name="edit">
+<input type="submit" id="delete" name="delete" value="Delete Account"></input>
+<!---<button type="button" id="login" >Log In</button>
+<button type="button" id="edit" >Edit Profile</button>--->
 </br>
 </br>
 <p id="info2">or</p>
 <!---<hr id="hr1"><p id="info2">or</p></hr><hr id="hr2"></hr>--->
-<button type="button" id="acc_create" >Create New Account </button>
+<!---<input type="button" value="Create New Account" id="create" name="create">-->
+<input type="submit" id="acc_create" name="acc_create" value="Create New Account"></input>
 </form>
+
+
 </body>
 </html>
